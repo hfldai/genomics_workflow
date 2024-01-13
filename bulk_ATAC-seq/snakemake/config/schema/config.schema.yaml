@@ -1,0 +1,37 @@
+$schema: "http://json-schema.org/draft-04/schema#"
+
+_yamldoc_title: Parameter Reference
+_yamldoc_description: All of the parameters available for tuning avocato may be found on this page. It is automatically generated from the general configuration template.
+
+type: object
+
+properties:
+        version:
+                type: string
+        general:
+                type: object
+                properties:
+                        output_dir:
+                                type: string
+                        project:
+                                type: string
+                        seed:
+                                type: number
+                        input:
+                                type: string
+                        input_type:
+                                type: string
+                                enum: [fastq, bam, bam_no_qc]
+                        genome_build:
+                                type: string
+                                enum: [hg19, hg38]
+                        data_download_to:
+                                type: string
+        alignment:
+                type: object
+                properties:
+                        aligner:
+                                type: string
+                                enum: [bowtie2, bwamem2]
+                        bowtie2_xsize:
+                                type: number

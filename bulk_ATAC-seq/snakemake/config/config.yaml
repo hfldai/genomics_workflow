@@ -1,0 +1,53 @@
+# This is the version of the pipeline being run.
+version: "0.1a"
+
+workflow:
+    cores: 8
+    
+##################################################################################################################
+###################################################### MAIN ######################################################
+##################################################################################################################
+
+# These parameters determine global options for the
+# entire pipeline. They must be changed every time
+# you want to rerun new data to avoid conflicts.
+general: 
+        output_dir: "results"
+        # Your analysis must have a unique name. This name will be both
+        # the name of your configuration file, and the name of the 
+        # folder inside the `output_dir' subdirectory.
+        project: "K562_ENCODE_ENCSR868FGK"
+        
+ 
+        # Some portions of the pipeline can be made deterministic
+        # by setting a seed. 
+        seed: 1
+
+        # Provide the path to your input files. Set the type of 
+        # your input files in the next line. If you are starting
+        # from FASTQ files, give a DIRECTORY (i.e. /your/fastq/diretory)
+        # If you are starting 
+        # from a bam file, give the full path to your BAM file.
+        # (i.e. /your/file.bam)
+        # If you are starting from a count matrix, give the path 
+        # to the file without the suffix.
+        # (i.e. /your/count_matrix where /your/count_matrix.mtx exists).
+        input: "/project/Wellcome_Discovery/liangtid/DPhil_tidy_up/workflow_bulk_atac/data/K562_ENCODE_ENCSR868FGK"
+
+        # Provide the type of input that you are using. If you select bam, check carefully stage1_bam_to_archrproj_analysis
+        # "fastq", "bam" or "bam_no_qc" (not supporting count_matrix option anymore)
+        # if using a BAM input, choose "bam" if you want to go through the barcode correction step by AVOCATO;
+        # otherwise choose "bam_no_qc" if your BAM does not need any quality control before translating to the fragments file. 
+        input_type: "fastq" 
+
+        # Provide the build to which you wish to align
+        # reads. 
+        genome_build: "hg38"
+
+        # Path to downloaded data
+        data_download_to: "data"
+
+alignment:
+        # One of [bowtie2, bwamem2]
+        aligner: "bowtie2"
+        bowtie2_xsize: 2000
