@@ -32,7 +32,7 @@ general:
         # If you are starting from a count matrix, give the path 
         # to the file without the suffix.
         # (i.e. /your/count_matrix where /your/count_matrix.mtx exists).
-        input: "/project/Wellcome_Discovery/liangtid/DPhil_tidy_up/workflow_bulk_atac/data/K562_ENCODE_ENCSR868FGK"
+        input: "/project/Wellcome_Discovery/liangtid/DPhil_tidy_up/resources/data/K562_ENCODE_ENCSR868FGK"
 
         # Provide the type of input that you are using. If you select bam, check carefully stage1_bam_to_archrproj_analysis
         # "fastq", "bam" or "bam_no_qc" (not supporting count_matrix option anymore)
@@ -49,5 +49,5 @@ general:
 
 alignment:
         # One of [bowtie2, bwamem2]
-        aligner: "bowtie2"
+        aligner: "bwamem2"
         bowtie2_xsize: 2000

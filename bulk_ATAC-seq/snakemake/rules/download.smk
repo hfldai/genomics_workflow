@@ -1,23 +1,42 @@
 ### referred to avocato ###
 
-if aligner == "bwamem2":
-    ext =  [".fa.gz.amb", ".fa.gz.ann", ".fa.gz.bwt", ".fa.gz.pac", ".fa.gz.sa"]
-else:
-    ext =  [".fa.gz.0123", ".fa.gz.amb", ".fa.gz.ann", ".fa.gz.bwt.2bit.64", ".fa.gz.pac"]    
+# if aligner == "bwa":
+#     ext =  [".fa.gz.amb", ".fa.gz.ann", ".fa.gz.bwt", ".fa.gz.pac", ".fa.gz.sa"]
+# else:
+bwamem2idx_ext = [".fa.gz.0123", ".fa.gz.amb", ".fa.gz.ann", ".fa.gz.bwt.2bit.64", ".fa.gz.pac"]    
+bowtie2idx_ext = [".1.bt2", ".2.bt2", ".3.bt2", ".4.bt2", ".rev.1.bt2", ".rev.2.bt2"]
 
 """
 Downloads the reference genome of the corresponding build."""
-# rule _download_reference:
-#     output: 
-#         fas = multiext(f"runs/common/{build}", ".fa", ".fa.gz")
-#     resources: tmpdir = tmpdir
-#     params: log = f"{logdir}/{proj}.log"
-#     run:
-#         os.system(f"wget {public_path}/{build}/{build}.fa -O runs/common/{build}.fa")
-#         os.system(f"wget {public_path}/{build}/{build}.fa -O runs/common/{build}.fa.gz")
-#         file = open(params.log, "a")
-#         file.write("- rule _download_reference\n")
-#         file.close
+rule _download_reference:
+    output: 
+        fagz = config["general"]["data_download_to"] + f"/{build}/{build}.fa.gz",
+        bwamem2_ls_fagz = config["general"]["data_download_to"] + f"/{build}/bwamem2_idx/{build}.fa.gz"
+    resources: tmpdir = tmpdir
+    params:
+        path_download = os.path.join(config["general"]["data_download_to"], build),
+        path_download_bwamem2 = config["general"]["data_download_to"] + f"/{build}/bwamem2_idx",
+        log = f"{logdir}/{proj}.log"
+    shell:
+        """
+            build_lower=$(echo {build} | tr '[:upper:]' '[:lower:]')
+            if [ $build_lower == "hg19"  ] || [ $build_lower == "grch37"  ];
+            then
+                download_pref="hg19"
+            elif [ $build_lower == "hg38"  ] || [ $build_lower == "grch38"  ];
+            then
+                download_pref="hg38"
+            fi
+            mkdir -p {params.path_download}
+            mkdir -p {params.path_download_bwamem2}
+            if [ ! -f {output.fagz} ];
+            then
+                wget https://hgdownload.cse.ucsc.edu/goldenpath/"$download_pref"/bigZips/"$download_pref".fa.gz -O {output.fagz}
+            fi
+            ln -sr {output.fagz} {output.bwamem2_ls_fagz}
+            echo "- rule _download_reference {output}" >> {params.log}
+        """
+# wget {public_path}/"$download_pref"/"$download_pref".fa -O {params.path_to_download}/"$download_pref".fa
 
 # """
 # Downloads the ref gene annotations for 
@@ -56,40 +75,54 @@ Downloads the reference genome of the corresponding build."""
 #         file = open(params.log, "a")
 #         file.write("- rule _download_chrom_sizes\n")
 #         file.close
-        
-# rule _download_index_bwa:
-#     output:
-#         indeces = multiext(f"runs/common/{build}", ext[0], ext[1], ext[2], ext[3], ext[4])
-#     resources:
-#         #tmpdir = config["general"]["tmpdir"]
-#         tmpdir = "runs/"+config["general"]["analysis_name"]+"/tmp"
-#     params:
-#         log = "runs/"+config["general"]["analysis_name"]+"/log/avocato.log"
-#     run: 
-#         os.system(f"wget {public_path}/{build}/{check_aligner}/{build}%s -O runs/common/{build}%s"%(ext[0], ext[0]))
-#         os.system(f"wget {public_path}/{build}/{check_aligner}/{build}%s -O runs/common/{build}%s"%(ext[1], ext[1]))
-#         os.system(f"wget {public_path}/{build}/{check_aligner}/{build}%s -O runs/common/{build}%s"%(ext[2], ext[2]))
-#         os.system(f"wget {public_path}/{build}/{check_aligner}/{build}%s -O runs/common/{build}%s"%(ext[3], ext[3]))
-#         os.system(f"wget {public_path}/{build}/{check_aligner}/{build}%s -O runs/common/{build}%s"%(ext[4], ext[4]))
-#         file = open(params.log, "a")
-#         file.write("- rule _download_index_bwa\n")
-#         file.close
+
+rule _download_bwamem2idx_all:
+    input:
+        expand(config["general"]["data_download_to"] + f"/{build}/bwamem2_idx/{build}" + "{postfix}",  postfix=bwamem2idx_ext)
+    resources: tmpdir=tmpdir
+    params: log = f"{logdir}/{proj}.log"
+
+rule _download_bwamem2idx_single:
+    output: config["general"]["data_download_to"] + f"/{build}/bwamem2_idx/{build}" + "{postfix}"
+    threads: 1
+    resources: tmpdir=tmpdir
+    params:
+        pf = "{postfix}",
+        path_download = config["general"]["data_download_to"] + f"/{build}/bwamem2_idx",
+        log = f"{logdir}/{proj}.log"
+    shell:
+        """
+            build_lower=$(echo {build} | tr '[:upper:]' '[:lower:]')
+            if [ $build_lower == "hg19"  ] || [ $build_lower == "grch37"  ];
+            then
+                download_pref="hg19"
+            elif [ $build_lower == "hg38"  ] || [ $build_lower == "grch38"  ];
+            then
+                download_pref="hg38"
+            fi
+            mkdir -p {params.path_download}
+            if [ ! -f {output} ];
+            then
+                wget {public_path}/"$download_pref"/bwamem2/"$download_pref"{params.pf} -O {output}
+            fi
+            echo "- rule _download_index_bwamem2_single {output}" >> {params.log}
+        """
         
 
 rule _download_bowtie2idx_all:
     input:
-        expand(config["general"]["data_download_to"] + f"/{build}/bowtie2idx/{build}" + "{postfix}",  postfix=[".1.bt2", ".2.bt2", ".3.bt2", ".4.bt2", ".rev.1.bt2", ".rev.2.bt2"])
+        expand(config["general"]["data_download_to"] + f"/{build}/bowtie2_idx/{build}" + "{postfix}",  postfix=bowtie2idx_ext)
     resources: tmpdir=tmpdir
     params: log = f"{logdir}/{proj}.log"
 
 
 rule _download_bowtie2idx_single:
-    output: config["general"]["data_download_to"] + f"/{build}/bowtie2idx/{build}" + "{postfix}"
+    output: config["general"]["data_download_to"] + f"/{build}/bowtie2_idx/{build}" + "{postfix}"
     threads: 1
     resources: tmpdir=tmpdir
     params:
         pf = "{postfix}",
-        path_download = config["general"]["data_download_to"] + f"/{build}/bowtie2idx",
+        path_download = config["general"]["data_download_to"] + f"/{build}/bowtie2_idx",
         log = f"{logdir}/{proj}.log"
     shell:
         """
@@ -102,7 +135,10 @@ rule _download_bowtie2idx_single:
                 download_pref="grch38_1kgmaj"
             fi
             mkdir -p {params.path_download}
-            wget https://genome-idx.s3.amazonaws.com/bt/"$download_pref"{params.pf} -O {output}
+            if [ ! -f {output} ];
+            then
+                wget https://genome-idx.s3.amazonaws.com/bt/"$download_pref"{params.pf} -O {output}
+            fi
             echo "- rule _download_index_bowtie_single {output}" >> {params.log}
         """
 

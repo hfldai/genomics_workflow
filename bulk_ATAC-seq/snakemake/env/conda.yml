@@ -1,0 +1,48 @@
+name: bulk_atac_e2e
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - fastqc
+  - aioeasywebdav
+  - eido
+  - cutadapt
+  - trim-galore
+  - samtools
+  - bwa 
+  - bwa-mem2 
+  - bowtie2 
+
+  - bedtools
+  - biopython 
+  - deeptools 
+  - flake8 
+  - gsl
+  - libiconv 
+  - macs2 
+  - matplotlib 
+  - numpy 
+  - numpydoc
+  - openssl 
+  - pandas 
+  - pathlib
+  - pdf2svg
+  - pysam 
+  # - pybedtools
+  - pyBigWig 
+  - pyfaidx 
+  - python=3.9.10
+  - recommonmark 
+  - rpy2 
+  - scipy
+  - seaborn
+  - snakemake
+  - sphinx-markdown-tables 
+  - sphinx 
+  - sphinx_rtd_theme 
+  - tabix
+  - tabulate=0.8
+  - tqdm 
+  - ucsc-bigwigtowig 
+  - ucsc-bedgraphtobigwig  

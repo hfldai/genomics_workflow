@@ -29,6 +29,7 @@ logdir = os.path.join(projdir, "log")
 aligner = config["alignment"]["aligner"]
 build = config["general"]["genome_build"]
 v = config["version"]
+public_path = "https://datashare.molbiol.ox.ac.uk/public/project/hugheslab/avocato"
 
 if not os.path.isdir(logdir):
     os.makedirs(logdir)

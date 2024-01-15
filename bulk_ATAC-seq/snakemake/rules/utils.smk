@@ -17,7 +17,8 @@ rule _sort_bam:
             samtools sort -@ {threads} -l 1 -o {output.bam} {input.bam}
             echo "- rule _sort_bam {params.somesort}" >> {params.log}
         """
-        
+
+
         
 rule _index_bam: 
     """

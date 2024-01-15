@@ -3,7 +3,8 @@ import os
 ### TODO: get PREFIX automatically
 PREFIX = "ENCLB674HYQ_Rep1"
 # "Nextera": CTGTCTCTTATACACATCT+AGATGTGTATAAGAGACAG
-
+bwamem2idx_ext = [".fa.gz.0123", ".fa.gz.amb", ".fa.gz.ann", ".fa.gz.bwt.2bit.64", ".fa.gz.pac"]    
+bowtie2idx_ext = [".1.bt2", ".2.bt2", ".3.bt2", ".4.bt2", ".rev.1.bt2", ".rev.2.bt2"]
 
 reads_all, = glob_wildcards(os.path.join(config["general"]["input"], "{reads}.fastq.gz"))
 if not reads_all:
@@ -83,7 +84,9 @@ rule _04_alignment:
     input:
         trim_reads1 = rules._02_adaptor_trimming.output.trim_reads1,
         trim_reads2 = rules._02_adaptor_trimming.output.trim_reads2,
-        bowtie2idx = expand(config["general"]["data_download_to"] + f"/{build}/bowtie2idx/{build}" + "{postfix}",  postfix=[".1.bt2", ".2.bt2", ".3.bt2", ".4.bt2", ".rev.1.bt2", ".rev.2.bt2"])
+        bowtie2idx = expand(config["general"]["data_download_to"] + f"/{build}/bowtie2_idx/{build}" + "{postfix}",  postfix=bowtie2idx_ext),
+        bwamem2idx = expand(config["general"]["data_download_to"] + f"/{build}/bwamem2_idx/{build}" + "{postfix}",  postfix=bwamem2idx_ext),
+        bwamem2_ref = config["general"]["data_download_to"] + f"/{build}/bwamem2_idx/{build}.fa.gz"
     output: f"{projdir}/04_alignment/{PREFIX}.bam"
     threads: workflow.cores
     resources: tmpdir=tmpdir
@@ -92,7 +95,8 @@ rule _04_alignment:
         outdir = f"{projdir}/04_alignment/",
         prefix = PREFIX,
         minq = 30,
-        bowtie2_indeces = os.path.join(config["general"]["data_download_to"], build, "bowtie2idx", build),
+        bam_tmp_bwamem2 = f"{tmpdir}/tmp.{PREFIX}.bwamem2.bam",
+        bowtie2_indeces = config["general"]["data_download_to"] + f"/{build}/bowtie2_idx/{build}",
         bowtie2_xsize = config["alignment"]["bowtie2_xsize"],
         log = f"{logdir}/{proj}.log"
     shell:
@@ -101,8 +105,16 @@ rule _04_alignment:
         then
             echo "Align paired-end reads using bowtie2, and filter for properly mapped, aligned and high quality (MAPQ>={params.minq})..."
             bowtie2 --very-sensitive -X {params.bowtie2_xsize} -p {threads} -x {params.bowtie2_indeces} -1 {input.trim_reads1} -2 {input.trim_reads2} | samtools view -@ 8 -bh -f 2 -F 1804 -q {params.minq} -O BAM -o {output}
+        elif [ {aligner} == "bwamem2" ];
+        then
+            echo "Align paired-end reads using bwa-mem2..."
+            bwa-mem2 mem -t {threads} {input.bwamem2_ref} {input.trim_reads1} {input.trim_reads2} | samtools view -@ {threads} -bh > {params.bam_tmp_bwamem2}
+            echo "Filter properly mapped, aligned and high quality (MAPQ>=20)..."
+            samtools view -b -f 2 -F 1804 -q 20 -o {output} {params.bam_tmp_bwamem2}
+            rm {params.bam_tmp_bwamem2}
         fi
         """
+# samtools view -1 - 
 
 rule all_alignment:
     input: 
