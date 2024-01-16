@@ -122,3 +122,28 @@ rule all_alignment:
         bam_sorted_index = f"{projdir}/04_alignment/{PREFIX}.sorted.bam.bai"
     resources: tmpdir=tmpdir
 
+rule final_bam_coverage:
+    input: f"{projdir}/05_bamCoverage/{PREFIX}.sorted.bam.bw"
+    resources: tmpdir=tmpdir
+
+# ### Marke and Remove duplicates ###
+# module load picard samtools
+
+# INBAM="$1"
+
+# OUTDIR=$(dirname $INBAM)"/1_duplicate_removal/"
+# OUTBAM=$OUTDIR/$(basename "$INBAM" | sed 's/.bam$//g').dedup.bam
+# METRICS=$OUTDIR/$(basename "$INBAM" | sed 's/.bam$//g').MarkDuplicates.metrix.txt
+
+# mkdir -p $OUTDIR
+
+# java -jar $EBROOTPICARD/picard.jar MarkDuplicates \
+# INPUT=$INBAM \
+# OUTPUT=$OUTBAM \
+# ASSUME_SORTED=true \
+# REMOVE_DUPLICATES=true \
+# METRICS_FILE=$METRICS \
+# VALIDATION_STRINGENCY=LENIENT \
+# TMP_DIR=/well/gerton/liangtid/tmp
+
+# samtools index $OUTBAM

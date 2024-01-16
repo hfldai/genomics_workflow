@@ -35,3 +35,11 @@ properties:
                                 enum: [bowtie2, bwamem2]
                         bowtie2_xsize:
                                 type: number
+        bamCoverage:
+                type: object
+                properties:
+                        normalize:
+                                type: string
+                                enum: [RPKM, CPM, BPM, RPGC, None]
+                        binSize:
+                                type: number

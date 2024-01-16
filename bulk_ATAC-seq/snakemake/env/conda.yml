@@ -4,6 +4,8 @@ channels:
   - bioconda
   - defaults
 dependencies:
+  - python=3.9
+  - snakemake
   - fastqc
   - aioeasywebdav
   - eido
@@ -12,11 +14,11 @@ dependencies:
   - samtools
   - bwa 
   - bwa-mem2 
-  - bowtie2 
+  - bowtie2
+  - deeptools 
 
   - bedtools
   - biopython 
-  - deeptools 
   - flake8 
   - gsl
   - libiconv 
@@ -31,13 +33,12 @@ dependencies:
   - pysam 
   # - pybedtools
   - pyBigWig 
-  - pyfaidx 
-  - python=3.9.10
+  - pyfaidx
   - recommonmark 
   - rpy2 
   - scipy
   - seaborn
-  - snakemake
+
   - sphinx-markdown-tables 
   - sphinx 
   - sphinx_rtd_theme 

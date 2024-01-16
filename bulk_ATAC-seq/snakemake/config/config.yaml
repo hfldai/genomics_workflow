@@ -51,3 +51,10 @@ alignment:
         # One of [bowtie2, bwamem2]
         aligner: "bwamem2"
         bowtie2_xsize: 2000
+bamCoverage:
+        # bamCoverage parameter
+        # Normalizing method; one of [RPKM, CPM, BPM, RPGC, None]
+        normalize: None
+
+        # binsize of base pairs in computating coverage (integer >=1 )
+        binSize: 1
