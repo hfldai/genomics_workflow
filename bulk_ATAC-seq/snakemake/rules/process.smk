@@ -105,6 +105,7 @@ rule _04_alignment:
         then
             echo "Align paired-end reads using bowtie2, and filter for properly mapped, aligned and high quality (MAPQ>={params.minq})..."
             bowtie2 --very-sensitive -X {params.bowtie2_xsize} -p {threads} -x {params.bowtie2_indeces} -1 {input.trim_reads1} -2 {input.trim_reads2} | samtools view -@ 8 -bh -f 2 -F 1804 -q {params.minq} -O BAM -o {output}
+            echo "- rule _04_alignment ({aligner}) " >> {params.log}
         elif [ {aligner} == "bwamem2" ];
         then
             echo "Align paired-end reads using bwa-mem2..."
@@ -112,38 +113,46 @@ rule _04_alignment:
             echo "Filter properly mapped, aligned and high quality (MAPQ>=20)..."
             samtools view -b -f 2 -F 1804 -q 20 -o {output} {params.bam_tmp_bwamem2}
             rm {params.bam_tmp_bwamem2}
+            echo "- rule _04_alignment ({aligner})" >> {params.log}
+        else
+            echo "Aligner not supported! Should be either bowtie2 or bwamem2"
+            echo "- [FAILED] rule _04_alignment ({aligner}): aligner not supported." >> {params.log}
         fi
         """
 # samtools view -1 - 
 
+rule _05_mark_remove_duplicates:
+    input:
+        bam_sorted = f"{projdir}/04_alignment/" + "{some}.sorted.bam",
+        bam_sorted_index = f"{projdir}/04_alignment/" + "{some}.sorted.bam.bai"
+    output:
+        bam_markdup_sorted = f"{projdir}/04_alignment/" + "{some}.sorted.dedup.bam",
+        # bam_markdup_sorted_index = f"{projdir}/04_alignment/" + "{some}.dedup.sorted.bam.bai",
+        markdup_metrics = f"{projdir}/04_alignment/" + "{some}.sorted.dedup.markduplicates.metrics.txt"
+    threads: 1
+    resources: tmpdir=tmpdir
+    params:
+        outdir = f"{projdir}/04_alignment/",
+        log = f"{logdir}/{proj}.log"
+    shell: 
+        """
+        picard MarkDuplicates \
+            INPUT={input.bam_sorted} \
+            OUTPUT={output.bam_markdup_sorted} \
+            ASSUME_SORTED=true \
+            REMOVE_DUPLICATES=true \
+            METRICS_FILE={output.markdup_metrics} \
+            VALIDATION_STRINGENCY=LENIENT \
+            TMP_DIR={tmpdir}
+        """
+
 rule all_alignment:
     input: 
-        bam_sorted = f"{projdir}/04_alignment/{PREFIX}.sorted.bam",
-        bam_sorted_index = f"{projdir}/04_alignment/{PREFIX}.sorted.bam.bai"
+        bam = f"{projdir}/04_alignment/{PREFIX}.sorted.dedup.bam",
+        bam_index = f"{projdir}/04_alignment/{PREFIX}.sorted.dedup.bam.bai",
+        markdup_metrics = f"{projdir}/04_alignment/{PREFIX}.sorted.dedup.markduplicates.metrics.txt"
     resources: tmpdir=tmpdir
 
 rule final_bam_coverage:
-    input: "{}/05_bamCoverage/{}.sorted.bam.{}.bs{}.bw".format(projdir, PREFIX, config["bamCoverage"]["normalize"], config["bamCoverage"]["binSize"])
+    input: "{}/06_bamCoverage/{}.sorted.dedup.bam.{}.bs{}.bw".format(projdir, PREFIX, config["bamCoverage"]["normalize"], config["bamCoverage"]["binSize"])
     resources: tmpdir=tmpdir
-
-# ### Marke and Remove duplicates ###
-# module load picard samtools
-
-# INBAM="$1"
-
-# OUTDIR=$(dirname $INBAM)"/1_duplicate_removal/"
-# OUTBAM=$OUTDIR/$(basename "$INBAM" | sed 's/.bam$//g').dedup.bam
-# METRICS=$OUTDIR/$(basename "$INBAM" | sed 's/.bam$//g').MarkDuplicates.metrics.txt
-
-# mkdir -p $OUTDIR
-
-# java -jar $EBROOTPICARD/picard.jar MarkDuplicates \
-# INPUT=$INBAM \
-# OUTPUT=$OUTBAM \
-# ASSUME_SORTED=true \
-# REMOVE_DUPLICATES=true \
-# METRICS_FILE=$METRICS \
-# VALIDATION_STRINGENCY=LENIENT \
-# TMP_DIR=/well/gerton/liangtid/tmp
-
-# samtools index $OUTBAM

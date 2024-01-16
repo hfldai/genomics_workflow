@@ -50,7 +50,7 @@ rule _bamCoverage:
         bam = f"{projdir}/04_alignment/" + "{some}.bam", # TODO replace 04_alignment by something more general
         bai = f"{projdir}/04_alignment/" + "{some}.bam.bai"
     output:
-        bw = f"{projdir}/05_bamCoverage/" + "{some}.bam" + ".{}.bs{}.bw".format(config["bamCoverage"]["normalize"], config["bamCoverage"]["binSize"])
+        bw = f"{projdir}/06_bamCoverage/" + "{some}.bam" + ".{}.bs{}.bw".format(config["bamCoverage"]["normalize"], config["bamCoverage"]["binSize"])
     threads: workflow.cores
     resources: tmpdir=tmpdir
     params:
