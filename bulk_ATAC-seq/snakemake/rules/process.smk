@@ -123,7 +123,7 @@ rule all_alignment:
     resources: tmpdir=tmpdir
 
 rule final_bam_coverage:
-    input: f"{projdir}/05_bamCoverage/{PREFIX}.sorted.bam.bw"
+    input: "{}/05_bamCoverage/{}.sorted.bam.{}.bs{}.bw".format(projdir, PREFIX, config["bamCoverage"]["normalize"], config["bamCoverage"]["binSize"])
     resources: tmpdir=tmpdir
 
 # ### Marke and Remove duplicates ###
@@ -133,7 +133,7 @@ rule final_bam_coverage:
 
 # OUTDIR=$(dirname $INBAM)"/1_duplicate_removal/"
 # OUTBAM=$OUTDIR/$(basename "$INBAM" | sed 's/.bam$//g').dedup.bam
-# METRICS=$OUTDIR/$(basename "$INBAM" | sed 's/.bam$//g').MarkDuplicates.metrix.txt
+# METRICS=$OUTDIR/$(basename "$INBAM" | sed 's/.bam$//g').MarkDuplicates.metrics.txt
 
 # mkdir -p $OUTDIR
 
