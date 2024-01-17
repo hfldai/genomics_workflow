@@ -13,25 +13,17 @@ workflow:
 # you want to rerun new data to avoid conflicts.
 general: 
         output_dir: "results"
-        # Your analysis must have a unique name. This name will be both
-        # the name of your configuration file, and the name of the 
-        # folder inside the `output_dir' subdirectory.
-        project: "K562_ENCODE_ENCSR868FGK"
-        
+        # A unique name for the project.
+        # It will be the name of the project directory.
+        project: "K562_ENCODE_ENCSR868FGK_2reps"
+
  
         # Some portions of the pipeline can be made deterministic
         # by setting a seed. 
         seed: 1
 
-        # Provide the path to your input files. Set the type of 
-        # your input files in the next line. If you are starting
-        # from FASTQ files, give a DIRECTORY (i.e. /your/fastq/diretory)
-        # If you are starting 
-        # from a bam file, give the full path to your BAM file.
-        # (i.e. /your/file.bam)
-        # If you are starting from a count matrix, give the path 
-        # to the file without the suffix.
-        # (i.e. /your/count_matrix where /your/count_matrix.mtx exists).
+        # Provide the path to the folder of your input files. Set the type of 
+        # your input files (FASTQ, bam) in the next line.
         input: "/project/Wellcome_Discovery/liangtid/DPhil_tidy_up/resources/data/K562_ENCODE_ENCSR868FGK"
 
         # Provide the type of input that you are using. If you select bam, check carefully stage1_bam_to_archrproj_analysis
@@ -39,6 +31,8 @@ general:
         # if using a BAM input, choose "bam" if you want to go through the barcode correction step by AVOCATO;
         # otherwise choose "bam_no_qc" if your BAM does not need any quality control before translating to the fragments file. 
         input_type: "fastq" 
+
+        has_replicates: True
 
         # Provide the build to which you wish to align
         # reads. 
