@@ -45,3 +45,22 @@ properties:
                                 enum: [RPKM, CPM, BPM, RPGC, None]
                         binSize:
                                 type: number
+        peak_calling:
+                type: object
+                properties:
+                        peak_caller:
+                                type: string
+                                enum: [macs, lanceotron]
+                        macs_q_cutoff:
+                                type: number
+                        lanceotron_callPeaks_cutoff:
+                                type: number
+                        lanceotron_callPeaks_format:
+                                type: string
+                                enum: [Web, Bed]
+                        lanceotron_callPeaks_threshold:
+                                type: number
+                        lanceotron_callPeaks_window:
+                                type: number
+                        lanceotron_callPeaks_skipheader:
+                                type: boolean

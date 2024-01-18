@@ -11,11 +11,13 @@ Downloads the reference genome of the corresponding build."""
 rule _download_reference:
     output: 
         fagz = config["general"]["data_download_to"] + f"/{build}/{build}.fa.gz",
-        bwamem2_ls_fagz = config["general"]["data_download_to"] + f"/{build}/bwamem2_idx/{build}.fa.gz"
+        bwamem2_ls_fagz = config["general"]["data_download_to"] + f"/{build}/bwamem2_idx/{build}.fa.gz",
+        blacklist = config["general"]["data_download_to"] + f"/{build}/{build}.blacklist.bed"
     resources: tmpdir = tmpdir
     params:
         path_download = os.path.join(config["general"]["data_download_to"], build),
         path_download_bwamem2 = config["general"]["data_download_to"] + f"/{build}/bwamem2_idx",
+        tmp_blacklist = config["general"]["data_download_to"] + f"/{build}/{build}.blacklist.bed.gz",
         log = f"{logdir}/{proj}.log"
     shell:
         """
@@ -23,9 +25,11 @@ rule _download_reference:
             if [ $build_lower == "hg19"  ] || [ $build_lower == "grch37"  ];
             then
                 download_pref="hg19"
+                url_blacklist_proj="ENCFF001TDO"
             elif [ $build_lower == "hg38"  ] || [ $build_lower == "grch38"  ];
             then
                 download_pref="hg38"
+                url_blacklist_proj="ENCFF356LFX"
             fi
             mkdir -p {params.path_download}
             mkdir -p {params.path_download_bwamem2}
@@ -34,6 +38,9 @@ rule _download_reference:
                 wget https://hgdownload.cse.ucsc.edu/goldenpath/"$download_pref"/bigZips/"$download_pref".fa.gz -O {output.fagz}
             fi
             ln -sr {output.fagz} {output.bwamem2_ls_fagz}
+            wget -O {params.tmp_blacklist} https://www.encodeproject.org/files/"$url_blacklist_proj"/@@download/"$url_blacklist_proj".bed.gz
+            zcat {params.tmp_blacklist} > {output.blacklist}
+            rm {params.tmp_blacklist}
             echo "- rule _download_reference {output}" >> {params.log}
         """
 # wget {public_path}/"$download_pref"/"$download_pref".fa -O {params.path_to_download}/"$download_pref".fa

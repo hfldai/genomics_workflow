@@ -48,7 +48,7 @@ alignment:
 bamCoverage:
         # bamCoverage parameter
         # Normalizing method; one of [RPKM, CPM, BPM, RPGC, None]
-        normalize: None
+        normalize: RPKM
 
         # binsize of base pairs in computating coverage (integer >=1 )
         binSize: 1
@@ -56,7 +56,7 @@ peak_calling:
         # Choose peak calling method
         #       "macs" will use macs2 to call peaks and.
         #       "lanceotron" will use lanceotron to call peaks.
-        peak_caller: macs
+        peak_caller: lanceotron
 
         macs_q_cutoff: 0.05
 

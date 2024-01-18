@@ -16,13 +16,15 @@ dependencies:
   - bwa-mem2 
   - bowtie2
   - deeptools 
-
+  - macs2 
+  - lanceotron
   - bedtools
+
+
   - biopython 
   - flake8 
   - gsl
   - libiconv 
-  - macs2 
   - matplotlib 
   - numpy 
   - numpydoc
@@ -38,7 +40,6 @@ dependencies:
   - rpy2 
   - scipy
   - seaborn
-
   - sphinx-markdown-tables 
   - sphinx 
   - sphinx_rtd_theme 

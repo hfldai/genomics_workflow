@@ -1,20 +1,14 @@
 1. Input files: fastq/ bam fragments
 - name conventions:
-    # FASTQ include replicates: xxx_RepX_1.fastq.gz, xxx_RepX_2.fastq.gz
-    # FASTQ not include replicates: xxx_1.fastq.gz, xxx_2.fastq.gz
-    # bam include replicates: xxx_RepX.bam ...
-    # bam not include replicates: xxx.bam
+    - FASTQ include replicates: xxx_RepX_1.fastq.gz, xxx_RepX_2.fastq.gz
+    - FASTQ not include replicates: xxx_1.fastq.gz, xxx_2.fastq.gz
+    - bam include replicates: xxx_RepX.bam ...
+    - bam not include replicates: xxx.bam
 2. Bulk & single-cell
 3. add peak calling (and choice)
  - whether provided with replicates, and how to take into account.
 4. add whether need some intermediate files & downstream
 5. investigate ENCODE standard
-
-
-
-conda create -n bulk_atac_e2e python=3.9    
-conda install -c bioconda -c conda-forge aioeasywebdav eido snakemake fastqc cutadapt trim-galore
-mamba install -c bioconda -c conda-forge aioeasywebdav eido snakemake fastqc cutadapt trim-galore
 
 
 1. fastqc
