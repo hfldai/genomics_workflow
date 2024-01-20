@@ -6,9 +6,9 @@
     - bam not include replicates: xxx.bam
 2. Bulk & single-cell
 3. peak calling: 
- - whether provided with replicates, and how to take into account.
+ - how to consider replicates.
 4. add whether need some intermediate files & downstream
-5. investigate ENCODE standard
+5. ENCODE standard
 
 
 2. fastqc
@@ -21,6 +21,8 @@
 -[x] macs2
 -[x] lanceotron
 -[ ] HMMRATAC
+-[ ] RCL
+6. downstream: peak annotation; GWAS prioritisation (& imputation?)
 
 <!-- 
 scRNA-seq
