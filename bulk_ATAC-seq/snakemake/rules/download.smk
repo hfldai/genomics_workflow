@@ -35,7 +35,7 @@ rule _download_reference:
             mkdir -p {params.path_download_bwamem2}
             if [ ! -f {output.fagz} ];
             then
-                wget https://hgdownload.cse.ucsc.edu/goldenpath/"$download_pref"/bigZips/"$download_pref".fa.gz -O {output.fagz}
+                wget https://hgdownload.soe.ucsc.edu/goldenpath/"$download_pref"/bigZips/"$download_pref".fa.gz -O {output.fagz}
             fi
             ln -sr {output.fagz} {output.bwamem2_ls_fagz}
             wget -O {params.tmp_blacklist} https://www.encodeproject.org/files/"$url_blacklist_proj"/@@download/"$url_blacklist_proj".bed.gz
